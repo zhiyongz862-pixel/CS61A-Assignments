@@ -25,6 +25,13 @@ def num_eights(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n == 0:
+        return 0
+    else:
+        if n % 10 == 8:
+            return 1 + num_eights(n//10)
+        else:
+            return num_eights(n//10)
 
 
 def digit_distance(n):
@@ -47,8 +54,24 @@ def digit_distance(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n //10 == 0:
+        return 0
+    else:
+        last,sec_last = n%10,(n//10)%10
+        return abs(last - sec_last) + digit_distance(n//10)
 
+def odd(n,odd_func,even_func,up):
+    # pass
+    if n>up:
+        return 0
+    else:
+        return odd_func(n) + even(n+1,odd_func,even_func,up)
 
+def even(n,odd_func,even_func,up):
+    if n>up:
+        return 0
+    else:
+        return even_func(n) + odd(n+1,odd_func,even_func,up)
 def interleaved_sum(n, odd_func, even_func):
     """Compute the sum odd_func(1) + even_func(2) + odd_func(3) + ..., up
     to n.
@@ -72,6 +95,9 @@ def interleaved_sum(n, odd_func, even_func):
     """
     "*** YOUR CODE HERE ***"
 
+    return odd(1,odd_func,even_func,n)
+
+
 
 def next_smaller_dollar(bill):
     """Returns the next smaller bill in order."""
@@ -85,6 +111,23 @@ def next_smaller_dollar(bill):
         return 5
     elif bill == 5:
         return 1
+    else:
+        return 0 
+    
+
+def help_count(total,up):
+    if total < 0:
+        return 0 
+    elif total == 0:
+        return 1 
+    elif up == 0:
+        return 0 
+
+    else:
+        with_up = help_count(total-up,up)
+        wo_up = help_count(total,next_smaller_dollar(up))
+        return with_up+wo_up
+    
 
 def count_dollars(total):
     """Return the number of ways to make change.
@@ -107,6 +150,7 @@ def count_dollars(total):
     True
     """
     "*** YOUR CODE HERE ***"
+    return help_count(total,100)
 
 
 def next_larger_dollar(bill):
@@ -122,6 +166,18 @@ def next_larger_dollar(bill):
     elif bill == 50:
         return 100
 
+def help_count_large(total,up):
+    if total < 0:
+        return 0 
+    elif total == 0:
+        return 1 
+    elif up == None:
+        return 0 
+
+    else:
+        with_up = help_count_large(total-up,up)
+        wo_up = help_count_large(total,next_larger_dollar(up))
+        return with_up+wo_up
 def count_dollars_upward(total):
     """Return the number of ways to make change using bills.
 
@@ -143,6 +199,7 @@ def count_dollars_upward(total):
     True
     """
     "*** YOUR CODE HERE ***"
+    return help_count_large(total,1)
 
 
 def print_move(origin, destination):
