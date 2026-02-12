@@ -27,6 +27,15 @@ def insert_items(s, before, after):
     True
     """
     "*** YOUR CODE HERE ***"
+    idx,final_len = 0,len(s)
+    
+    while idx < final_len:
+        if s[idx] == before:
+            s.insert(idx+1,after)
+            idx = idx +1 
+            final_len+=1
+        idx += 1
+    return s
 
 
 def group_by(s, fn):
@@ -40,12 +49,12 @@ def group_by(s, fn):
     {9: [-3, 3], 4: [-2, 2], 1: [-1, 1], 0: [0]}
     """
     grouped = {}
-    for ____ in ____:
-        key = ____
+    for x in s:
+        key = fn(x)
         if key in grouped:
-            ____
+            grouped[key].append(x)
         else:
-            grouped[key] = ____
+            grouped[key] = [x]
     return grouped
 
 
@@ -71,6 +80,12 @@ def count_occurrences(t, n, x):
     2
     """
     "*** YOUR CODE HERE ***"
+    ans = 0 
+    for _ in range(n):
+        y = next(t)
+        if x==y:
+            ans+=1
+    return ans
 
 
 def repeated(t, k):
@@ -94,6 +109,20 @@ def repeated(t, k):
     """
     assert k > 1
     "*** YOUR CODE HERE ***"
+    cur,cnt = next(t),1
+    last = cur -1 
+    while 1:
+        last = cur 
+        cur = next(t)
+        if last == cur:
+            cnt +=1 
+            if cnt >=k:
+                return cur 
+        else:
+            cnt = 1
+        
+    
+
 
 
 def sprout_leaves(t, leaves):
@@ -130,6 +159,12 @@ def sprout_leaves(t, leaves):
           2
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        t = tree(label(t),[tree(x) for x in leaves])
+        return t
+    else:
+        return tree(label(t),[sprout_leaves(x,leaves) for x in branches(t)])
+        
 
 
 def partial_reverse(s, start):
@@ -145,7 +180,12 @@ def partial_reverse(s, start):
     [1, 2, 7, 6, 5, 3, 4]
     """
     "*** YOUR CODE HERE ***"
-
+    index,cnt,i,middle = start,(len(s)-start)//2,0 ,(start+len(s)-1)/2 
+    while i<cnt:
+        i+=1
+        s[index],s[int(middle-index+middle)] = s[int(middle-index+middle)],s[index]
+        index = index+1
+     
 
 
 # Tree Data Abstraction
