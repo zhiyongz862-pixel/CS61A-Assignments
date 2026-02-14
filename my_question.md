@@ -1,5 +1,8 @@
 # 一定要注意 range是左开右闭的
 
+# 注意HW5的后面两个题目暂时还没理解
+
+
 # 1. Control Flow & Logical Operators (布尔逻辑与控制流)
 
 ## 1.1. Truthiness (真假值规则)
@@ -988,5 +991,97 @@ def a_then_b_from(a,b):
 [3, 4, 5, 6]
 >>> list(a_then_b_from([3,4],[5,6]))
 [3, 4, 5, 6]
+
+
+
+#hw 05的第一道题目
+def hailstone(n):
+    """
+    Yields the elements of the hailstone sequence starting at n.
+    At the end of the sequence, yield 1 infinitely.
+
+    >>> hail_gen = hailstone(10)
+    >>> [next(hail_gen) for _ in range(10)]
+    [10, 5, 16, 8, 4, 2, 1, 1, 1, 1]
+    >>> next(hail_gen)
+    1
+    """
+    "*** YOUR CODE HERE ***"
+    # 迭代
+    # while 1:
+    #     yield n 
+    #     if n!=1:
+    #         if n%2 == 0:
+    #             n = n//2
+    #         else:
+    #             n= n *3 + 1
+
+    if n==1:
+        yield n 
+        yield from hailstone(n)
+    else:
+        yield n 
+        if n % 2 ==0:
+            yield from hailstone(n//2)
+        else:
+            yield from hailstone(n * 3+1)
+            
+# 这个例子还没整明白
+
+def stair_ways(n):
+    """
+    Yield all the ways to climb a set of n stairs taking
+    1 or 2 steps at a time.
+
+    >>> list(stair_ways(0))
+    [[]]
+    >>> s_w = stair_ways(4)
+    >>> sorted([next(s_w) for _ in range(5)])
+    [[1, 1, 1, 1], [1, 1, 2], [1, 2, 1], [2, 1, 1], [2, 2]]
+    >>> list(s_w) # Ensure you're not yielding extra
+    []
+    """
+    "*** YOUR CODE HERE ***"
+    # 这个例子其实没明白
+    if n == 0:
+        yield []
+    elif n==1:
+        yield [1]
+    else:
+        for way in stair_ways(n - 1):
+            yield [1] + way
+        for x in stair_ways(n-2):
+            yield [2] + x
+
 ```
 
+# 12.Class
+
+## 12.1 类的基础知识
+
+如果类和实例都有同一个名字的属性，先找实例的，再找类的
+
+```python
+tom_account.balance  
+getattr(tom_account,'balance') #得到那个属性 
+hasattr(tom_account,'balance') #看看是否有
+
+tome_account.interest = 0.08 #如果说tom是一个实例，那么他不会管类属性，直接在自己的实例属性中加一个
+Account.interest = 0.08 #类属性改变
+
+Account.deposit(tom_account,1007) #其实python当中的self就是一个类的实例，这种方法和tom_account.deposit(1007)一样的
+#但是，这样调用时function的调用，那样事method
+
+```
+
+## 12.2 类的继承
+
+```
+# 在进行类的继承的时候，会和base class share相同的属性以及方法，但是sunclass可以override，没有override的和baseclass一样，因此，我们只需要改写我们需要的部分就OK
+```
+
+# 13.string representations 
+
++ 在python当中，所有的objects只会产生两种string表示
+  + str 人类可以理解
+  + repr python解释器可以理解

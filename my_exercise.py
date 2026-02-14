@@ -35,11 +35,11 @@ def a_then_b_from(a,b):
 # 我到了
 # 7
 
-def countdown(k):
+def countdown(k,n):
     if k>0:
         yield k 
-        for x in countdown(k-1):
-            print("我到了")
+        for x in countdown(k-1,n+1):
+            print(f"我到了countdown({k},{n})")
             yield x
         # yield countdown(k-1)
 # 等价于
@@ -48,3 +48,26 @@ def countdown_from(k):
     if k>0:
         yield k 
         yield from countdown_from(k-1)
+
+class Account:
+    def __init__(self,account_holder):
+        self.balance = 0 
+        self.holder = account_holder 
+    def deposit(self,amount):
+        self.balance += amount 
+        return self.balance 
+    def withdraw(self,amount):
+        if amount > self.balance:
+            return 'Insufficient funds'
+        self.balance = self.balance - amount
+        return self.balance
+
+
+# 继承  找属性先找当前类的 再找base class的
+# 继承是 is a的意思，组合是has a的意思 
+class CheckingAccount(Account):
+    withdraw_fee = 1
+    interest = 0.01
+    def withdraw(self, amount):
+        # 这里为了实现封装原则，尽量不要直接用base class的属性，而是调用其方法借口
+        return Account.withdraw(self,amount+self.withdraw_fee) #这里要自己提供self，因为不是在实例中找，而是在类中找
