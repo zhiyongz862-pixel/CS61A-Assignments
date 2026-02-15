@@ -71,3 +71,60 @@ class CheckingAccount(Account):
     def withdraw(self, amount):
         # 这里为了实现封装原则，尽量不要直接用base class的属性，而是调用其方法借口
         return Account.withdraw(self,amount+self.withdraw_fee) #这里要自己提供self，因为不是在实例中找，而是在类中找
+    
+
+
+def test_21_represention():
+    from fractions import Fraction 
+    half = Fraction(1,2) # 1和2对应分子和分母 
+
+# 探究重载repr和str
+class Ration:
+    def __init__(self,n,d):
+        self.number = n 
+        self.denom = d  
+    def __repr__(self):
+        return f'Ration({self.number}, {self.denom})'
+    def __str__(self):
+        return f'{self.number}/{self.denom}'
+    
+
+# 探究重载 add
+class Ratio:
+    def __init__(self, n, d):
+        self.numer = n
+        self.denom = d
+
+    def __repr__(self):
+        return 'Ratio({0}, {1})'.format(self.numer, self.denom)
+
+    def __str__(self):
+        return '{0}/{1}'.format(self.numer, self.denom)
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            n = self.numer + self.denom * other
+            d = self.denom
+        elif isinstance(other, Ratio):
+            n = self.numer * other.denom + self.denom * other.numer
+            d = self.denom * other.denom
+        g = gcd(n, d)
+        return Ratio(n//g, d//g)
+
+    __radd__ = __add__
+
+def gcd(n, d):
+    while n != d:
+        n, d = min(n, d), abs(n-d)
+    return n
+
+
+def append_to(num, target=[]): # ❌ 危险！target 在内存里只有一份 定义时调用
+    target = [] # 运行时调用
+    target.append(num)
+    return target
+
+print(append_to(1))  # 输出 [1]
+print(append_to(2))  # 输出 [1, 2]  <-- 竟然保留了上次的结果！
+
+# python当中链表的实现

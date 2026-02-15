@@ -1082,6 +1082,115 @@ Account.deposit(tom_account,1007) #其实python当中的self就是一个类的�
 
 # 13.string representations 
 
+evel(repr(object)) == object 可以重现对象
+
 + 在python当中，所有的objects只会产生两种string表示
   + str 人类可以理解
   + repr python解释器可以理解
+
+在python中，每一个对象都有\__str\__和\_\_repr\_\_两个内置函数，作用是吧对象用字符串的形式表示出来 
+
+如果说两个对象都没有重写这两个方法，这两个方法会继承自Object父类。但是这时显示的内容并不是很友好，因为object的\_\_ str\_\_方法内部是pass，所以会返回给我们一个内存地址 
+
++ 如果只重写了repr，那么str()与repr()都是调用 __repr__ 
++ str重写，各用各的 
++ 两个重写，各用各的 
+
+print format str会调用\_\_str\_\_,直接输入变量，使用repr
+
+
+
+```
+>>> from fractions import Fraction
+>>> half = Fraction(1,2)
+>>> half
+Fraction(1, 2)
+>>> repr(half) #计算机能看懂的，返回一个类的字符串
+'Fraction(1, 2)'
+>>> print(half) #调用str方法
+1/2
+>>> str(half)
+'1/2'
+>>> eval(repr(half))
+Fraction(1, 2)
+
+
+>>> repr(s)
+"'Hello World'"
+>>> print(repr(s))
+'Hello World'
+>>> str(repr(s))
+"'Hello World'"
+>>> half.__repr__()
+'Fraction(1, 2)'
+>>> repr(half)
+'Fraction(1, 2)'
+>>> 
+>>> half.__str__()
+'1/2'
+>>> str(half)
+'1/2'
+>>> p
+```
+
+
+
+
+
+```python
+# 重写str和repr方法可以重载打印
+class Ration:
+    def __init__(self,n,d):
+        self.number = n 
+        self.denom = d  
+    def __repr__(self):
+        return f'Ration({self.number}, {self.denom})'
+    def __str__(self):
+        return f'{self.number}/{self.denom}'
+      
+      
+>>> half = Ration(1,2)
+>>> print(half)
+1/2
+>>> half 
+Ration(1, 2)
+```
+
+其他重载:
+
+\_\_add\_\_
+
+a+b，其实就是a在调用\_\_add\_\_方法，把b作为参数传进去了，radd就是反过来，让b作为调用函数的那一个
+
+​    __radd__ = __add__ 这一句就是同时支持左乘和右乘
+
+```python
+class Ratio:
+    def __init__(self, n, d):
+        self.numer = n
+        self.denom = d
+
+    def __repr__(self):
+        return 'Ratio({0}, {1})'.format(self.numer, self.denom)
+
+    def __str__(self):
+        return '{0}/{1}'.format(self.numer, self.denom)
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            n = self.numer + self.denom * other
+            d = self.denom
+        elif isinstance(other, Ratio):
+            n = self.numer * other.denom + self.denom * other.numer
+            d = self.denom * other.denom
+        g = gcd(n, d)
+        return Ratio(n//g, d//g)
+
+    __radd__ = __add__
+
+def gcd(n, d):
+    while n != d:
+        n, d = min(n, d), abs(n-d)
+    return n
+```
+
