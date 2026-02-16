@@ -124,7 +124,70 @@ def append_to(num, target=[]): # ❌ 危险！target 在内存里只有一份 �
     target.append(num)
     return target
 
-print(append_to(1))  # 输出 [1]
-print(append_to(2))  # 输出 [1, 2]  <-- 竟然保留了上次的结果！
+# print(append_to(1))  # 输出 [1]
+# print(append_to(2))  # 输出 [1, 2]  <-- 竟然保留了上次的结果！
 
 # python当中链表的实现
+
+# 链表的可变性
+
+class Link:
+    """A linked list.
+
+    >>> s = Link(1)
+    >>> s.first
+    1
+    >>> s.rest is Link.empty
+    True
+    >>> s = Link(2, Link(3, Link(4)))
+    >>> s.first = 5
+    >>> s.rest.first = 6
+    >>> s.rest.rest = Link.empty
+    >>> s                                    # Displays the contents of repr(s)
+    Link(5, Link(6))
+    >>> s.rest = Link(7, Link(Link(8, Link(9))))
+    >>> s
+    Link(5, Link(7, Link(Link(8, Link(9)))))
+    >>> print(s)                             # Prints str(s)
+    <5 7 <8 9>>
+    """
+    empty = ()
+
+    def __init__(self, first, rest=empty):
+        assert rest is Link.empty or isinstance(rest, Link)
+        self.first = first
+        self.rest = rest
+
+    def __repr__(self):
+        if self.rest is not Link.empty:
+            rest_repr = ', ' + repr(self.rest)
+        else:
+            rest_repr = ''
+        return 'Link(' + repr(self.first) + rest_repr + ')'
+
+    def __str__(self):
+        string = '<'
+        while self.rest is not Link.empty:
+            string += str(self.first) + ' '
+            self = self.rest
+        return string + str(self.first) + '>'
+    
+
+def fib(n):
+    if n == 0 or n == 1:
+        return n
+    else:
+        return fib(n-2) + fib(n-1)
+
+def count(f):
+    def counted(n):
+        counted.call_count += 1
+        print(counted.call_count,n)
+        return f(n)
+    # 利用了函数也是个对象
+    counted.call_count = 0
+    return counted
+
+# fib = count(fib) # 这里递归函数在找fib时候找的就是count(fib)了，而不是fib
+# print(fib(10))
+# print(fib.call_count)

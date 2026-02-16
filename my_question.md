@@ -1194,3 +1194,97 @@ def gcd(n, d):
     return n
 ```
 
+# 14 .链表
+
+## 14.1 链表对象的可变性
+
+以下例子就是用可变性构造了一个循环链表
+
+```python
+>>> s = Link(1,Link(2,Link(3)))
+>>> s.first = 5
+>>> t = s.rest 
+>>> t.rest = s
+>>> s.first 
+5
+>>> s.rest.rest.rest.rest.rest.first
+2
+```
+
+# 15 efficiency
+
+```python
+def fib(n):
+    if n == 0 or n == 1:
+        return n
+    else:
+        return fib(n-2) + fib(n-1)
+
+def count(f):
+    def counted(n):
+        counted.call_count += 1
+        print(counted.call_count,n)
+        return f(n)
+    # 利用了函数也是个对象
+    counted.call_count = 0
+    return counted
+
+# fib = count(fib) # 这里递归函数在找fib时候找的就是count(fib)了，而不是fib
+# print(fib(10))
+# print(fib.call_count)
+```
+
+继承相关习题
+````python
+>>> class A:
+...   x, y = 0, 0
+...   def __init__(self):
+...         return
+>>> class B(A):
+...   def __init__(self):
+...         return
+>>> class C(A):
+...   def __init__(self):
+...         return
+>>> print(A.x, B.x, C.x)
+? 0,0,0
+-- Not quite. Try again! --
+
+? 0, 0, 0
+-- Not quite. Try again! --
+
+? 0 0 0
+-- OK! --
+
+>>> B.x = 2
+>>> print(A.x, B.x, C.x)
+? 0 2 0
+-- OK! --
+
+>>> A.x += 1
+>>> print(A.x, B.x, C.x)
+? 1 2 0
+-- Not quite. Try again! --
+
+? 1 2 1
+-- OK! --
+
+>>> obj = C()
+>>> obj.y = 1
+>>> C.y == obj.y
+? True
+-- Not quite. Try again! --
+
+? False 
+-- OK! --
+
+>>> A.y = obj.y
+>>> print(A.y, B.y, C.y, obj.y)
+? 1 0 0 1
+-- Not quite. Try again! --
+
+? 1 1 1 1
+-- OK! --
+
+````
+
