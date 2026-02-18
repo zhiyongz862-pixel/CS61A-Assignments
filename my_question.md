@@ -424,7 +424,7 @@ def promoted(s, f):
 >>> suits
 ['coin']
 >>> suits.append('cup') #添加一个元素
->>> suits.extend(['sword','club']) #添加一个元素
+>>> suits.extend(['sword','club']) #添加一个元素 必须是一个可迭代对象
 >>> suits 
 ['coin', 'cup', 'sword', 'club']
 >>> original_suits
@@ -851,10 +851,11 @@ TypeError: 'list' object is not an iterator
     * **功能**：返回最小值/最大值。
     * **技巧**：可以加 `key` 参数。
     * **代码**：
+        
         ```python
         max(['a', 'apple', 'z'], key=len) # -> 'apple' (按长度比)
         ```
-
+    
 * **`sum(iterable, start=0)`**
     * **功能**：求和。
     * **代码**：`sum([1, 2, 3])` -> 6

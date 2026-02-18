@@ -12,6 +12,15 @@ def cumulative_mul(t):
     Tree(5040, [Tree(60, [Tree(3), Tree(4), Tree(5)]), Tree(42, [Tree(7)])])
     """
     "*** YOUR CODE HERE ***"
+    def func(t):
+        if Tree.is_leaf(t):
+            return t.label
+        else:
+            # ans = cumulative_mul(t.branches[:])
+            for sub_tree in t.branches:
+                t.label = t.label * func(sub_tree)
+            return t.label
+    x = func(t)
 
 
 def prune_small(t, n):
@@ -31,11 +40,11 @@ def prune_small(t, n):
     >>> t3
     Tree(6, [Tree(1), Tree(3, [Tree(1), Tree(2)])])
     """
-    while ____:
-        largest = max(____, key=____)
+    while len(t.branches)>n:
+        largest = max(t.branches, key=lambda x:x.label)
         t.branches.remove(largest)
     for b in t.branches:
-        ____
+        prune_small(b,n)
 
 
 def delete(t, x):
@@ -58,14 +67,16 @@ def delete(t, x):
     Tree(1, [Tree(4), Tree(5), Tree(3, [Tree(6)]), Tree(6), Tree(7), Tree(8), Tree(4)])
     """
     new_branches = []
-    for _________ in ________________:
-        _______________________
+    for b in t.branches:
+        delete(b,x)
         if b.label == x:
-            __________________________________
+            # pass
+            for z in b.branches:
+                if z!=[]:
+                    new_branches.append(z)
         else:
-            __________________________________
-    t.branches = ___________________
-
+            new_branches.append(b)
+    t.branches = new_branches
 
 def max_path_sum(t):
     """Return the maximum path sum of the tree.
@@ -75,6 +86,14 @@ def max_path_sum(t):
     11
     """
     "*** YOUR CODE HERE ***"
+    if t.branches == []:
+        return t.label 
+    else:
+        sum = -100000
+        for b in t.branches:
+            ans = max_path_sum(b)
+            sum = max(ans,sum)
+        return sum+t.label
 
 
 class Tree:
