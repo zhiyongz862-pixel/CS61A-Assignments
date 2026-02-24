@@ -1289,3 +1289,51 @@ def count(f):
 
 ````
 
+# 16 scheme
+
+```scheme
++(1 2) #scheme调用表达式 
+(quotient 10 2) #调用除法表达式
+(number? 3)#看看3是否是个整数
+ans:t
+(interger? 2)
+(zero? (-2 2))
+
+(define pi 3.14)#定义pi这个变量为3.14
+（* pi 2） #结果 6.28
+
+(define (abs x) #定义函数名字和形参
+   (if (< x 0)
+       (-x)
+       (x)
+       )
+  )
+(abs -3) #调用函数
+
+(define plus4 (lambda (x) (+ x 4))) #定义lambda函数
+((lambda (x y z)(+ x y (squzare))) 1 2 3) #带调用的
+
+(cond ((> x 10) (print 'big'))
+      ((> x 5) (print 'medium'))
+      (else (print 'small'))
+      ) # if else 
+(print
+ (cond ((> x 10) ( 'big'))
+      ((> x 5) ('medium'))
+      (else ('small')
+      )) # 和上面等价 没有return 写啥就是啥
+ 
+(if (> x 10)
+    (begin 
+     (print 'big)
+     (print 'gug))
+    ) #多个子句
+ 
+ (define c (let (a 3)
+             (b(+2 2)))
+             (sqrt(+ (* a a) (* b b)))))
+ 
+
+
+```
+
