@@ -851,7 +851,7 @@ TypeError: 'list' object is not an iterator
     * **功能**：返回最小值/最大值。
     * **技巧**：可以加 `key` 参数。
     * **代码**：
-        
+      
         ```python
         max(['a', 'apple', 'z'], key=len) # -> 'apple' (按长度比)
         ```
@@ -1377,6 +1377,74 @@ ans:t
 )
 
 
+# (car x) 列表第一个元素 
+#(cdr x)列表的下一个元素
 
+
+# (cons opt1 opt2) ;cons的调用函数，第一个参数代表链表的第一个元素，第二个参数代表链表的第二个元素
+
+; hw08 (define (ascending? s) (
+; (ascending? '(1 2 2 3 4)) 递归的使用 以及怎么用列表car当前元素 null？是不是空
+if (or (null? s) (null? (cdr s)))
+    #t
+    (and (<= (car s) (car(cdr s))) (ascending? (cdr s)))
+) )
+
+; 怎么样使用递归解决问题 
+(define (my-filter pred s) 
+(
+    cond ((null? s) '())
+        ((pred (car s)) (cons (car s) (my-filter pred (cdr s))))
+        (else (my-filter pred (cdr s)))
+)
+
+)
+
+(define (interleave lst1 lst2)(
+
+    cond ((null? lst1) lst2)
+        ((null? lst2) lst1)
+        (else (cons (car lst1) (interleave lst2 (cdr lst1))))
+
+)
+
+)
+
+(define (no-repeats s) 
+
+ (if (null? s) s
+    (cons (car s)
+      (no-repeats (filter (lambda (x) (not (= (car s) x))) (cdr s)))))
+      
+      )
+
+
+```
+
+# 17 异常
+
+
+
+```
+raise TypeError('very bad idea') # 手动输入异常，程序会直接停止
+
+
+#try可以再捕获异常之后继续执行
+def invert(x):
+    result = 1/x
+    print("never print if x is 0")
+    return result
+
+def invert_safe(x):
+    try:
+        return invert(x)
+    except ZeroDivisionError as e:
+        return str(e) 
+
+>>> invert(2)
+never print if x is 0
+0.5
+>>> invert_safe(0)
+'division by zero'
 ```
 

@@ -191,3 +191,14 @@ def count(f):
 # fib = count(fib) # 这里递归函数在找fib时候找的就是count(fib)了，而不是fib
 # print(fib(10))
 # print(fib.call_count)
+
+def invert(x):
+    result = 1/x
+    print("never print if x is 0")
+    return result
+
+def invert_safe(x):
+    try:
+        return invert(x)
+    except ZeroDivisionError as e:
+        return str(e) 

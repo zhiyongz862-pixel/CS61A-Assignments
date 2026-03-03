@@ -14,20 +14,21 @@ def calc_eval(exp):
     3
     """
     if isinstance(exp, Pair):
-        operator = ____________ # UPDATE THIS FOR Q2, e.g (+ 1 2), + is the operator
-        operands = ____________ # UPDATE THIS FOR Q2, e.g (+ 1 2), 1 and 2 are operands
+        operator = exp.first # UPDATE THIS FOR Q2, e.g (+ 1 2), + is the operator
+        operands = exp.rest # UPDATE THIS FOR Q2, e.g (+ 1 2), 1 and 2 are operands
         if operator == 'and': # and expressions
             return eval_and(operands)
         elif operator == 'define': # define expressions
             return eval_define(operands)
         else: # Call expressions
-            return calc_apply(___________, ___________) # UPDATE THIS FOR Q2, what is type(operator)?
+            # 这个也有问题 因为可以返回对应的操作子 操作子可能是变量，也可能就是是一个字符串，所以要递归
+            return calc_apply(calc_eval(operator), operands) # UPDATE THIS FOR Q2, what is type(operator)?
     elif exp in OPERATORS:   # Looking up procedures
         return OPERATORS[exp]
     elif isinstance(exp, int) or isinstance(exp, bool):   # Numbers and booleans
         return exp
-    elif _________________: # CHANGE THIS CONDITION FOR Q4 where are variables stored?
-        return _________________ # UPDATE THIS FOR Q4, how do you access a variable?
+    elif exp in bindings : # CHANGE THIS CONDITION FOR Q4 where are variables stored?
+        return bindings[exp] # UPDATE THIS FOR Q4, how do you access a variable?
 
 def calc_apply(op, args):
     return op(args)
@@ -52,6 +53,16 @@ def floor_div(args):
     20
     """
     "*** YOUR CODE HERE ***"
+    ans,rest = args.first,args.rest
+    while isinstance(rest,Pair):
+        if isinstance(rest.first,int) or isinstance(rest.first,float):
+            ans = ans // calc_eval(rest.first)
+        elif isinstance(rest.first,Pair):
+            ans = ans // calc_eval(rest.first)
+        else:
+            raise ValueError('Error input')
+        rest = rest.rest
+    return ans 
 
 scheme_t = True   # Scheme's #t
 scheme_f = False  # Scheme's #f
@@ -74,9 +85,20 @@ def eval_and(expressions):
     True
     """
     "*** YOUR CODE HERE ***"
+    if expressions is nil:
+        return scheme_t
+    ans = calc_eval(expressions.first)
+    while isinstance(expressions,Pair):
+        if calc_eval(expressions.first) is scheme_f: #短路
+            return scheme_f
+        ans,expressions =calc_eval(expressions.first),expressions.rest
+    return ans 
+
 
 bindings = {}
 
+
+# 这个是看的答案 直接在这里绑定就好了
 def eval_define(expressions):
     """
     >>> eval_define(Pair("a", Pair(1, nil)))
@@ -93,6 +115,9 @@ def eval_define(expressions):
     2
     """
     "*** YOUR CODE HERE ***"
+    bindings[expressions.first] = calc_eval(expressions.rest.first)
+    return expressions.first
+
 
 OPERATORS = { "//": floor_div, "+": addition, "-": subtraction, "*": multiplication, "/": division }
 
