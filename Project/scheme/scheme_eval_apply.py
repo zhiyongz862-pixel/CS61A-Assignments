@@ -19,13 +19,13 @@ def scheme_eval(expr, env, _=None): # Optional third argument is ignored
     >>> scheme_eval(expr, create_global_frame())
     4
     """
-    # Evaluate atoms
+    # Evaluate atoms 是个变量返回他的值 +号这种操作也会返回
     if scheme_symbolp(expr):
         return env.lookup(expr)
-    elif self_evaluating(expr):
+    elif self_evaluating(expr): #如果是常量，返回他本身的值
         return expr
 
-    # All non-atomic expressions are lists (combinations)
+    # All non-atomic expressions are lists (combinations) 看看列表定义是否不严谨
     if not scheme_listp(expr):
         raise SchemeError('malformed list: {0}'.format(repl_str(expr)))
     first, rest = expr.first, expr.rest
@@ -34,6 +34,13 @@ def scheme_eval(expr, env, _=None): # Optional third argument is ignored
     else:
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
+        proc = scheme_eval(first,env) #找到当前的procedure 下一步需要，算出来每一个操作数
+        # ans = rest.map(lambda x: scheme_apply(scheme_eval(x.first),x.rest,env)
+        args = rest.map(lambda operand: scheme_eval(operand, env)) # 比如(+ (+ 2 2) 3) 这个链表其实就3个元素 + 那个括号 3，这个会先
+        #递归调用到那个(+ 2 2),他会再进来这个函数，就变成一个很简单的求值，对于3，也进来这个函数，只不过在求值就返回了
+        # 其实最主要的问题就是要把 每个子单元都看成链表的元素这样
+        return scheme_apply(proc,args,env) #当前是简单情况
+
         # END PROBLEM 3
 
 def scheme_apply(procedure, args, env):
@@ -45,20 +52,32 @@ def scheme_apply(procedure, args, env):
     if isinstance(procedure, BuiltinProcedure):
         # BEGIN PROBLEM 2
         "*** YOUR CODE HERE ***"
+        ans = []
+        while isinstance(args,Pair):
+            ans.append(args.first)
+            args = args.rest
+        if procedure.need_env is True:
+            ans.append(env)
         # END PROBLEM 2
         try:
             # BEGIN PROBLEM 2
             "*** YOUR CODE HERE ***"
+            return procedure.py_func(*ans) #TODO 学一下解包
             # END PROBLEM 2
         except TypeError as err:
             raise SchemeError('incorrect number of arguments: {0}'.format(procedure))
     elif isinstance(procedure, LambdaProcedure):
         # BEGIN PROBLEM 9
         "*** YOUR CODE HERE ***"
+        new_frame = procedure.env.make_child_frame(procedure.formals,args)
+        return eval_all(procedure.body,new_frame)
+        
         # END PROBLEM 9
     elif isinstance(procedure, MuProcedure):
         # BEGIN PROBLEM 11
         "*** YOUR CODE HERE ***"
+        new_frame = env.make_child_frame(procedure.formals, args)
+        return eval_all(procedure.body,new_frame)
         # END PROBLEM 11
     else:
         assert False, "Unexpected procedure: {}".format(procedure)
@@ -79,7 +98,15 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 6
-    return scheme_eval(expressions.first, env) # replace this with lines of your own code
+    if expressions is nil:
+        return None 
+    eval_ans = expressions.map(lambda opt:scheme_eval(opt,env)) #先都做个评估
+
+    while not eval_ans is nil:
+        ans = eval_ans.first 
+        eval_ans = eval_ans.rest
+    return ans 
+    # return scheme_eval(expressions.first, env) # replace this with lines of your own code
     # END PROBLEM 6
 
 

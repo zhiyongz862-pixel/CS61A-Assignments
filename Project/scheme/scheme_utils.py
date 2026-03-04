@@ -9,6 +9,7 @@ from scheme_classes import *
 def scheme_procedurep(x):
     return isinstance(x, Procedure)
 
+# 这个list是否是合法的
 def scheme_listp(x):
     """Return whether x is a well-formed list. Assumes no cycles."""
     while x is not nil:
@@ -17,9 +18,11 @@ def scheme_listp(x):
         x = x.rest
     return True
 
+# 看看x是不是一个bool值
 def scheme_booleanp(x):
     return x is True or x is False
 
+# 是不是一个数字（不能是bool值）
 def scheme_numberp(x):
     return isinstance(x, numbers.Real) and not scheme_booleanp(x)
 
@@ -31,19 +34,24 @@ def is_scheme_false(val):
     """Only False is false in scheme_reader."""
     return val is False
 
+# 看看x是不是一个字符串
 def scheme_stringp(x):
     return isinstance(x, str) and x.startswith('"')
 
+# 看看x是不是一个变量
 def scheme_symbolp(x):
     return isinstance(x, str) and not scheme_stringp(x)
 
+# 看看类名是不是nil
 def scheme_nullp(x):
     return type(x).__name__ == 'nil'
 
+# 是不是bool值  是不是实数 是不是变量 是不是nil类 是不是字符串
 def scheme_atomp(x):
     return (scheme_booleanp(x) or scheme_numberp(x) or scheme_symbolp(x) or
             scheme_nullp(x) or scheme_stringp(x))
 
+# 看看是不是常量（不用去查的变量）
 def self_evaluating(expr):
     """Return whether EXPR evaluates to itself."""
     return (scheme_atomp(expr) and not scheme_symbolp(expr)) or expr is None
