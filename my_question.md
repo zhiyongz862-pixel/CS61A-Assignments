@@ -1423,8 +1423,6 @@ if (or (null? s) (null? (cdr s)))
 
 # 17 异常
 
-
-
 ```
 raise TypeError('very bad idea') # 手动输入异常，程序会直接停止
 
@@ -1448,3 +1446,88 @@ never print if x is 0
 'division by zero'
 ```
 
+# 18 programs as data
+
+```scheme
+;scheme里面可以通过eval函数完成类似于编译->出结果的过程（可以帮助人们完成生成程序的程序）
+>(list '+ 1 2) ;
+输出(+ 1 2);是的，这很像一个表达式
+>(eval (list '+ 1 2)) ;他就会评估这个表达式
+```
+
+
+
+
+
+## 18.1 `Quote` vs `Quasiquote` (关键区别)
+| 符号    | 名称           | 行为                                  | 结果示例                                                     |
+| :------ | :------------- | :------------------------------------ | :----------------------------------------------------------- |
+| `'`     | **Quote**      | 绝对冷冻：所有内容视为符号或列表      | `'(a ,(+ 1 1))` → `(a (unquote (+ 1 1)))` 他会显示解引用，但是不会真正的解除 |
+| `` ` `` | **Quasiquote** | 局部解冻：允许使用 `,` 执行内部表达式 | `` `(a ,(+ 1 1)) `` → `(a 2)`                                |
+
+## 18.2. 高级抽象：代码模板生成器 (Code Template)
+
+图片 2 展示的 `sum-while` 是一个典型的**元编程 (Metaprogramming)** 例子。它不是在运行循环，而是在利用 `Quasiquote` **构造**一段循环代码。
+
+### 2.1 源代码深度拆解
+```scheme
+(define (sum-while initial-x condition add-to-total update-x)
+  `(begin
+     (define (f x total)
+       (if ,condition                    ; 解冻：插入动态条件逻辑
+           (f ,update-x (+ total ,add-to-total)) ; 解冻：插入变量更新与累加逻辑
+           total))
+     (f ,initial-x 0)))                  ; 解冻：插入初始启动值
+```
+
+## 18.3 Scheme 深度笔记：`define` (函数) vs. `define-macro` (宏)
+
+
+
+在 Scheme 解释器中，这两者的处理路径完全不同：
+
+| 特性         | 单纯的 `define` (Procedure)      | `define-macro` (Macro)                        |
+| :----------- | :------------------------------- | :-------------------------------------------- |
+| **操作对象** | 操作 **数值/数据** (Data values) | 操作 **源代码** (Source code / S-expressions) |
+| **求值时机** | **运行时** (Evaluation time)     | **运行前** (Transformation time)              |
+| **参数处理** | 参数进入函数前 **先被求值**      | 参数以 **原始代码列表** 传入，不求值          |
+| **产出结果** | 返回计算后的 **最终结果值**      | 返回一段 **新的代码**，随后由解释器再次求值   |
+
+---
+
+###  实例拆解：为什么需要宏？
+
+参考图片中的 `twice` 例子，我们要实现将一段代码运行两次。
+
+### ❌ 失败尝试：使用普通的 `define`
+```scheme
+(define (twice-func expr)
+  (list 'begin expr expr))
+
+(twice-func (print 2))
+
+```
+
+**执行过程：**
+
+1. 解释器看到 `(print 2)`，立刻执行它，屏幕打印出 `2`。
+2. `print` 的返回值（通常是 `undefined`）被传进函数。
+3. 函数返回 `(begin undefined undefined)`，这显然不是我们要的结果。
+
+```scheme
+(define-macro (twice expr)
+  (list 'begin expr expr))
+
+(twice (print 2))
+```
+
+
+
+
+
+**执行过程：**
+
+1. **代码重写**：宏拿到原始代码块 `(print 2)`，不做求值，直接将其嵌入模板。
+2. **产生新代码**：宏返回一个新的列表：`(begin (print 2) (print 2))`。
+3. **二次求值**：解释器接收到这个新列表，再次调用 `scheme_eval`。
+4. **结果**：屏幕打印出两次 `2`。
