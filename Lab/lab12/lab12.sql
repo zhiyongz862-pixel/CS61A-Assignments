@@ -25,14 +25,35 @@ CREATE TABLE sizes AS
   SELECT "Soda 320"   , 30;
 
 CREATE TABLE sharing AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT F.course as course, COUNT(DISTINCT F.hall) as shared
+  FROM finals as F,finals as F1
+  WHERE F.hall = F1.hall and F.course != F1.course 
+  GROUP BY F.course 
+  ;
 
+
+-- 聪明的做法是！=改成小于 一个去重的trick
+-- 还有就是要注意+法要加上括号
 CREATE TABLE pairs AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT S.room || ' and ' || S1.room || ' together have ' || (S.seats + S1.seats) || ' seats' AS rooms
+  FROM sizes as S,  sizes as S1
+  WHERE S.room < S1.room and S.seats + S1.seats >= 1000
+  ORDER BY S.seats + S1.seats DESC
+  ;
 
 CREATE TABLE big AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT F.course as course 
+  FROM finals as F, sizes as S 
+  WHERE F.hall = S.room 
+  GROUP BY F.course 
+  HAVING SUM(seats) >= 1000
+  
+  ;
 
 CREATE TABLE remaining AS
-  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+  SELECT F.course as course, SUM(S.seats) - MAX(S.seats) as remaining
+  FROM finals as F, sizes as S 
+  WHERE F.hall = S.room 
+  GROUP BY F.course   
+  ;
 

@@ -1531,3 +1531,111 @@ never print if x is 0
 2. **产生新代码**：宏返回一个新的列表：`(begin (print 2) (print 2))`。
 3. **二次求值**：解释器接收到这个新列表，再次调用 `scheme_eval`。
 4. **结果**：屏幕打印出两次 `2`。
+
+# 19 尾递归
+
+尾递归其实就是调用递归的时候，不需要存储当前的环境，也就是递归到最后一层的结果就是这个问题最后的答案，那么就会非常的高效
+
+## 19.1. 核心定义
+**尾递归**是指一个函数里的最后一个动作是调用函数本身。
+
+* **普通递归**：调用完还得回来，所以要带着“记忆”（当前环境/调用栈）去递归。
+* **尾递归**：最后一步直接算出结果或交还控制权，不需要保留当前环境。递归到最后一层的结果，就是整个问题的最终答案。
+
+## 19.2. 直观对比：普通 vs 尾递归
+
+### ❌ 普通递归 (需要回传计算)
+每次调用都得记住“我还有个加法没做”，导致调用栈越来越深。
+```scheme
+(define (factorial n)
+  (if (= n 1)
+      1
+      (* n (factorial (- n 1))))) ; 这里的 * 号迫使系统保留当前环境
+
+```
+
+### ✅ 尾递归 (直接交棒)
+
+利用一个 **状态变量 (Accumulator)** 带着结果跑，不需要回头。
+
+Scheme
+
+```
+(define (factorial n)
+  (define (iter n result)
+    (if (= n 1)
+        result
+        (iter (- n 1) (* n result)))) ; 纯函数调用，不带任何后续操作
+  (iter n 1))
+```
+
+## 19.3. 为什么它高效？
+
+1. **内存占用极低**：普通递归可能导致 `Stack Overflow`（栈溢出），而尾递归在解释器层面会被优化成类似于 `while`循环的结构。
+2. **环境复用**：不需要存储当前层的局部变量，因为下一层不再需要它们。
+3. **答案即终点**：最后一层算出来的那个值，直接就是顶层需要的答案。
+
+# 20 .SQL
+
+## 20.1 建表格
+
+SELECT [EXPRESSION] AS [NAME,[EXPRESSION] AS [NAME] union **EXPRESSION代表要筛选出哪几列，where从行出发去找**
+
+SELECT [EXPRESSION] AS [NAME,[EXPRESSION] AS [NAME];
+
+
+
+```sql
+#怎么建表
+CREATE TABLE AS PARENTS
+  SELECT "abraham" AS parent, "barack" AS child UNION
+  SELECT "abraham"          , "clinton"          UNION
+  SELECT "delano"           , "herbert"          UNION
+  SELECT "fillmore"         , "abraham"          UNION
+  SELECT "fillmore"         , "delano"           UNION;
+```
+
+
+
+  有一个AS就产生一列 ,union表示多行
+
+## 20.2 投影表格
+
+```sql
+SELECT  child from parents where parent = 'abraham'
+```
+
+## 20.3 多个表格的投影
+
+SELECT * FROM parents, dogs  
+
+​	where child = name;
+
+多个from会对from中的所有表都做笛卡尔积运算来做这件事
+
+## 20.4 聚合函数
+
+SELECT max(legs) from animals
+
+count 告诉你有多少航
+
+count(*) 数多少行
+
+select count(distinct weight) #查查独独一无二的weight是啥
+
+
+
+group by and having 
+group 代表先根据某个数进行分组，然后分组查找 
+
+having对组里的数据再去按行重新筛选一遍，可以包含聚合函数 where不能包含聚合函数 CREATE TABLE low_variance AS
+
+  SELECT fur, 1 AS height_range 
+
+  FROM dogs 
+
+  GROUP BY fur 
+
+  HAVING MIN(height) >= AVG(height) * 0.7 
+
+​     AND MAX(height) <= AVG(height) * 1.3;
